@@ -6,6 +6,7 @@ import com.marketplace.catalog.DigitalProduct;
 import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,7 +37,8 @@ final class SampleCatalog {
                 new ServiceProduct("SV-001", "Laptop setup", money("40.00"), 1),
                 new ServiceProduct("SV-002", "Extended warranty", money("150.00"), 0),
                 new GiftCard("GC-050", "Gift card 50", money("50.00")),
-                new GiftCard("GC-100", "Gift card 100", money("100.00"))));
+                new GiftCard("GC-100", "Gift card 100", money("100.00")),
+                new SubscriptionProduct("SUB-001", "Cloud backup", money("9.99"), 1)));
 
         return new Catalog("Online Marketplace", List.of(electronics, books, services));
     }

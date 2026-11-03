@@ -1,10 +1,13 @@
 package com.marketplace.visitor;
 
+import com.marketplace.catalog.Catalog;
 import com.marketplace.catalog.CatalogNode;
+import com.marketplace.catalog.Category;
 import com.marketplace.catalog.DigitalProduct;
 import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -96,6 +99,23 @@ class VisitorTest {
 
         assertEquals(money("120.00"), node.accept(tax));
         assertEquals(money("9.00"), node.accept(shipping));
+    }
+
+    @Test
+    void subscriptionIsHandledByEveryVisitor() {
+        SubscriptionProduct plan = new SubscriptionProduct("SUB1", "Music <Family>", money("20.00"), 12);
+        Category media = new Category("media", "Media", List.of(plan));
+
+        assertEquals(money("1.00"), media.accept(tax));          // 20.00 * 0.05 service rate
+        assertEquals(BigDecimal.ZERO, media.accept(shipping));
+        assertEquals(BigDecimal.ZERO, media.accept(new InventoryValueVisitor()));
+        assertEquals(List.of(plan), media.accept(new ProductFilterVisitor(product -> true)));
+        assertEquals(Map.of(SubscriptionProduct.class, 1), CatalogStatisticsVisitor.collect(media).productsByType());
+        assertEquals("media", CatalogIndex.of(new Catalog("C", List.of(media))).categoryIdOf("SUB1"));
+        assertEquals(String.join("\n",
+                "<category id=\"media\" name=\"Media\">",
+                "  <subscription sku=\"SUB1\" name=\"Music &lt;Family&gt;\" price=\"20.00\" billingMonths=\"12\"/>",
+                "</category>"), media.accept(new XmlExportVisitor()));
     }
 
     @Test

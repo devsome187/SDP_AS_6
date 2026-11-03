@@ -17,4 +17,6 @@ public interface CatalogVisitor<R> {
     R visit(ServiceProduct product);
 
     R visit(GiftCard giftCard);
+
+    R visit(SubscriptionProduct subscription);
 }

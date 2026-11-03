@@ -9,6 +9,7 @@ import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.Product;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -49,6 +50,11 @@ public final class ProductFilterVisitor implements CatalogVisitor<List<Product>>
     @Override
     public List<Product> visit(GiftCard giftCard) {
         return test(giftCard);
+    }
+
+    @Override
+    public List<Product> visit(SubscriptionProduct subscription) {
+        return test(subscription);
     }
 
     private List<Product> collect(List<? extends CatalogNode> children) {

@@ -8,6 +8,7 @@ import com.marketplace.catalog.DigitalProduct;
 import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +54,12 @@ public final class XmlExportVisitor implements CatalogVisitor<String> {
     @Override
     public String visit(GiftCard giftCard) {
         return emptyElement("giftCard", productAttributes(giftCard.sku(), giftCard.name(), giftCard.price().toPlainString()));
+    }
+
+    @Override
+    public String visit(SubscriptionProduct subscription) {
+        return emptyElement("subscription", productAttributes(subscription.sku(), subscription.name(), subscription.price().toPlainString())
+                + attribute("billingMonths", String.valueOf(subscription.billingMonths())));
     }
 
     private String element(String tag, String attributes, List<? extends CatalogNode> children) {

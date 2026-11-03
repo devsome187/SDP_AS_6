@@ -8,6 +8,7 @@ import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.Product;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +88,11 @@ public final class CatalogIndex {
         @Override
         public Void visit(GiftCard giftCard) {
             return register(giftCard);
+        }
+
+        @Override
+        public Void visit(SubscriptionProduct subscription) {
+            return register(subscription);
         }
 
         private Void register(Product product) {

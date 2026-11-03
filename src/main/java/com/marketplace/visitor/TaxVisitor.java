@@ -4,13 +4,14 @@ import com.marketplace.catalog.DigitalProduct;
 import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
  * Sales tax on one unit of every product. Goods (physical and digital) and services have
- * their own rates; gift cards are not taxed at sale. Each line is rounded half-up to cents.
+ * their own rates (subscriptions count as services); gift cards are not taxed at sale. Each line is rounded half-up to cents.
  */
 public final class TaxVisitor extends ProductSumVisitor {
     private final BigDecimal goodsRate;
@@ -39,6 +40,11 @@ public final class TaxVisitor extends ProductSumVisitor {
     @Override
     public BigDecimal visit(GiftCard giftCard) {
         return BigDecimal.ZERO;
+    }
+
+    @Override
+    public BigDecimal visit(SubscriptionProduct subscription) {
+        return taxOf(subscription.price(), serviceRate);
     }
 
     private static BigDecimal taxOf(BigDecimal price, BigDecimal rate) {

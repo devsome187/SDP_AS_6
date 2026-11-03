@@ -9,6 +9,7 @@ import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.catalog.Product;
 import com.marketplace.catalog.ServiceProduct;
+import com.marketplace.catalog.SubscriptionProduct;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +73,12 @@ public final class CatalogStatisticsVisitor implements CatalogVisitor<Void> {
     @Override
     public Void visit(GiftCard giftCard) {
         countProduct(giftCard);
+        return null;
+    }
+
+    @Override
+    public Void visit(SubscriptionProduct subscription) {
+        countProduct(subscription);
         return null;
     }
 

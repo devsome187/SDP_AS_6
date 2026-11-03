@@ -7,6 +7,7 @@ import com.marketplace.catalog.Category;
 import com.marketplace.catalog.DigitalProduct;
 import com.marketplace.catalog.GiftCard;
 import com.marketplace.catalog.PhysicalProduct;
+import com.marketplace.catalog.Product;
 import com.marketplace.catalog.ServiceProduct;
 import com.marketplace.catalog.SubscriptionProduct;
 
@@ -34,31 +35,31 @@ public final class XmlExportVisitor implements CatalogVisitor<String> {
 
     @Override
     public String visit(PhysicalProduct product) {
-        return emptyElement("physical", productAttributes(product.sku(), product.name(), product.price().toPlainString())
+        return emptyElement("physical", productAttributes(product)
                 + attribute("weightKg", product.weightKg().toPlainString())
                 + attribute("stock", String.valueOf(product.stock())));
     }
 
     @Override
     public String visit(DigitalProduct product) {
-        return emptyElement("digital", productAttributes(product.sku(), product.name(), product.price().toPlainString())
+        return emptyElement("digital", productAttributes(product)
                 + attribute("downloadSizeMb", String.valueOf(product.downloadSizeMb())));
     }
 
     @Override
     public String visit(ServiceProduct product) {
-        return emptyElement("service", productAttributes(product.sku(), product.name(), product.price().toPlainString())
+        return emptyElement("service", productAttributes(product)
                 + attribute("durationHours", String.valueOf(product.durationHours())));
     }
 
     @Override
     public String visit(GiftCard giftCard) {
-        return emptyElement("giftCard", productAttributes(giftCard.sku(), giftCard.name(), giftCard.price().toPlainString()));
+        return emptyElement("giftCard", productAttributes(giftCard));
     }
 
     @Override
     public String visit(SubscriptionProduct subscription) {
-        return emptyElement("subscription", productAttributes(subscription.sku(), subscription.name(), subscription.price().toPlainString())
+        return emptyElement("subscription", productAttributes(subscription)
                 + attribute("billingMonths", String.valueOf(subscription.billingMonths())));
     }
 
@@ -77,8 +78,9 @@ public final class XmlExportVisitor implements CatalogVisitor<String> {
         return "<" + tag + attributes + "/>";
     }
 
-    private static String productAttributes(String sku, String name, String price) {
-        return attribute("sku", sku) + attribute("name", name) + attribute("price", price);
+    private static String productAttributes(Product product) {
+        return attribute("sku", product.sku()) + attribute("name", product.name())
+                + attribute("price", product.price().toPlainString());
     }
 
     private static String attribute(String name, String value) {

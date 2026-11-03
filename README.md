@@ -11,7 +11,7 @@ No libraries besides JUnit 5. No `java.util.Observable`, no event bus.
 ## Build and run
 
 ```bash
-mvn test                                    # 27 JUnit tests
+mvn test                                    # 29 JUnit tests
 mvn -q compile
 java -cp target/classes com.marketplace.App 4 1000   # <producer threads> <events per producer>
 ```
@@ -234,12 +234,12 @@ marketplace where sellers add new product kinds every sprint), when visitors are
 third parties who cannot be recompiled, or when most visitors would treat the new type the same
 way — then polymorphic methods on the elements, or pattern matching over a sealed hierarchy, are cheaper.
 
-## Tests (27)
+## Tests (29)
 
 | Class | What it checks |
 |---|---|
-| `ObserverRegistryTest` (6) | per-type delivery, cancel, unsubscribe and subscribe inside a handler, duplicate subscription, concurrent subscribe/cancel while 3 threads publish |
+| `ObserverRegistryTest` (7) | per-type delivery, cancel, unsubscribe and subscribe inside a handler, duplicate subscription, failing observer isolated, concurrent subscribe/cancel while 3 threads publish |
 | `FeedAndListenerTest` (7) | old/new price + versions, unknown SKU, stock floor at zero, wishlist once-only, alert threshold, cache ordering, aggregator windows |
 | `VisitorTest` (9) | tax 194.50, shipping 16.50, inventory value 10,000.00, statistics, filter, exact XML with escaping, double dispatch through `CatalogNode`, subscription element, index |
-| `CategoryInspectionTest` (2) | report computed on the subtree only; full chain feed → aggregator → inspection → archive |
+| `CategoryInspectionTest` (3) | report computed on the subtree only; restock list follows live stock; full chain feed → aggregator → inspection → archive |
 | `StressTest` (3) | 4 × 1,000 events = exactly 4,000, executor terminated, cache converges; wish fulfilled exactly once under concurrency; failing producer reported and pool still shuts down |

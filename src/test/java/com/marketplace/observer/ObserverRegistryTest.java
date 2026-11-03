@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ObserverRegistryTest {
@@ -96,6 +97,24 @@ class ObserverRegistryTest {
         registry.publish(priceEvent(1));
 
         assertEquals(1, received.size());
+    }
+
+    @Test
+    void failingObserverDoesNotStopDeliveryToTheOthers() {
+        List<Long> received = new ArrayList<>();
+        registry.subscribe(PriceChanged.TYPE, event -> {
+            throw new IllegalStateException("first");
+        });
+        registry.subscribe(PriceChanged.TYPE, event -> received.add(event.version()));
+        registry.subscribe(PriceChanged.TYPE, event -> {
+            throw new IllegalArgumentException("second");
+        });
+
+        IllegalStateException failure = assertThrows(IllegalStateException.class, () -> registry.publish(priceEvent(1)));
+
+        assertEquals(List.of(1L), received, "observers after the failing one still get the event");
+        assertEquals(1, failure.getSuppressed().length);
+        assertEquals("second", failure.getSuppressed()[0].getMessage());
     }
 
     @Test

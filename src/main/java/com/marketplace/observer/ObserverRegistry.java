@@ -24,13 +24,30 @@ public final class ObserverRegistry<E extends Event> implements Subject<E> {
         return () -> forType.remove(registration);
     }
 
+    /**
+     * Delivers the event to every observer of its type. An observer that throws does not
+     * stop delivery to the others: the first failure is rethrown once everyone has been
+     * notified, with any later failures attached as suppressed exceptions.
+     */
     public void publish(E event) {
         List<Registration<?>> forType = registrations.get(event.type());
         if (forType == null) {
             return;
         }
+        RuntimeException failure = null;
         for (Registration<?> registration : forType) {
-            deliver(registration, event);
+            try {
+                deliver(registration, event);
+            } catch (RuntimeException e) {
+                if (failure == null) {
+                    failure = e;
+                } else {
+                    failure.addSuppressed(e);
+                }
+            }
+        }
+        if (failure != null) {
+            throw failure;
         }
     }
 

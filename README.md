@@ -197,8 +197,10 @@ on it (Visitor) → publishes a `CategoryReport` event → `ReportArchive`, `Mar
   `close()` calls `shutdown()`, `awaitTermination(timeout)` and only then `shutdownNow()`.
   `StressTest` checks 4 threads × 1,000 events = exactly 4,000 deliveries and that the executor
   is terminated.
-* Known limitation: observers run on the publisher's thread, so a slow listener slows its
-  producer; and a listener that throws aborts the delivery to later listeners for that event.
+* **Failure isolation.** A listener that throws does not stop delivery: `publish` notifies every
+  observer, then rethrows the first failure with later ones attached as suppressed, so the
+  producer still sees the error instead of it being swallowed.
+* Known limitation: observers run on the publisher's thread, so a slow listener slows its producer.
 
 ### Clean Code (ch. 11–12)
 

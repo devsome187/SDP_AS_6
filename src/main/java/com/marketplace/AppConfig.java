@@ -24,6 +24,6 @@ public record AppConfig(
     public static AppConfig fromArgs(String[] args) {
         int threads = args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_THREADS;
         int events = args.length > 1 ? Integer.parseInt(args[1]) : DEFAULT_EVENTS_PER_PRODUCER;
-        return new AppConfig(threads, events, 50, new BigDecimal("12.00"), 5);
+        return new AppConfig(threads, events, 50, new BigDecimal("8.00"), 5);
     }
 }

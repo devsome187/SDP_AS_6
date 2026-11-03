@@ -41,6 +41,13 @@ class VisitorTest {
     }
 
     @Test
+    void inventoryValueMatchesHandCalculation() {
+        // L1 1000.00*5=5000.00, P1 500.00*10=5000.00, all other products hold no stock
+        assertEquals(0, money("10000.00").compareTo(CATALOG.accept(new InventoryValueVisitor())));
+        assertEquals(0, money("5000.00").compareTo(LAPTOPS.accept(new InventoryValueVisitor())));
+    }
+
+    @Test
     void statisticsAccumulateAcrossTheWholeTree() {
         CatalogStatistics statistics = CatalogStatisticsVisitor.collect(CATALOG);
 

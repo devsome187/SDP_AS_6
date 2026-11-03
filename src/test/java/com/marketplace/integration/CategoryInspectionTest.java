@@ -5,6 +5,7 @@ import com.marketplace.catalog.PhysicalProduct;
 import com.marketplace.event.CategoryDropTrend;
 import com.marketplace.event.CategoryReport;
 import com.marketplace.event.PriceChanged;
+import com.marketplace.feed.InventoryFeed;
 import com.marketplace.feed.PriceFeed;
 import com.marketplace.listener.CategoryDropAggregator;
 import com.marketplace.listener.ReportArchive;
@@ -27,11 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CategoryInspectionTest {
     private final CatalogIndex index = CatalogIndex.of(TestCatalog.CATALOG);
+    private final InventoryFeed inventory = new InventoryFeed(new ObserverRegistry<>(), Map.of("L1", 5, "P1", 10));
     private final CategoryInspectionService inspection = new CategoryInspectionService(
             new ObserverRegistry<>(), index,
             new TaxVisitor(new BigDecimal("0.12"), new BigDecimal("0.05")),
             new ShippingCostVisitor(money("5.00"), money("2.00"), money("1.50")),
-            new ProductFilterVisitor(product -> product instanceof PhysicalProduct physical && physical.stock() < 8),
+            new ProductFilterVisitor(product -> product instanceof PhysicalProduct
+                    && inventory.currentStock(product.sku()) < 8),
             new XmlExportVisitor());
     private final ReportArchive archive = new ReportArchive();
 
@@ -49,6 +52,19 @@ class CategoryInspectionTest {
         assertEquals(List.of("L1"), report.restockSkus());     // stock 5 < 8
         assertTrue(report.xml().startsWith("<category id=\"laptops\""));
         assertFalse(report.xml().contains("P1"), "sibling subtree must not be visited");
+    }
+
+    @Test
+    void restockListFollowsLiveStockNotTheCatalogSnapshot() {
+        inspection.subscribe(CategoryReport.TYPE, archive::onReport);
+        inventory.adjustStock("L1", 10);  // 5 → 15
+        inventory.adjustStock("P1", -4);  // 10 → 6
+
+        inspection.onDropTrend(new CategoryDropTrend("laptops", 1));
+        inspection.onDropTrend(new CategoryDropTrend("phones", 1));
+
+        assertEquals(List.of(), archive.reports().get(0).restockSkus());
+        assertEquals(List.of("P1"), archive.reports().get(1).restockSkus());
     }
 
     @Test

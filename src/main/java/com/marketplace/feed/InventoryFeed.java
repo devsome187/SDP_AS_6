@@ -34,6 +34,14 @@ public final class InventoryFeed implements Subject<StockChanged> {
         registry.publish(new StockChanged(sku, updated.previousQuantity(), updated.quantity(), updated.version()));
     }
 
+    public int currentStock(String sku) {
+        StockLevel level = levels.get(sku);
+        if (level == null) {
+            throw new IllegalArgumentException("Unknown SKU: " + sku);
+        }
+        return level.quantity();
+    }
+
     private record StockLevel(int quantity, int previousQuantity, long version) {
     }
 }

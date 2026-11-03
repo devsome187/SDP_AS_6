@@ -55,8 +55,9 @@ public final class App {
 
         TaxVisitor taxVisitor = new TaxVisitor(new BigDecimal("0.12"), new BigDecimal("0.05"));
         ShippingCostVisitor shippingVisitor = new ShippingCostVisitor(new BigDecimal("5.00"), new BigDecimal("2.00"), new BigDecimal("1.50"));
-        ProductFilterVisitor restockFilter = new ProductFilterVisitor(
-                product -> product instanceof PhysicalProduct physical && physical.stock() < config.lowStockThreshold());
+        // the catalog tree holds the opening stock; the live level comes from the inventory feed
+        ProductFilterVisitor restockFilter = new ProductFilterVisitor(product -> product instanceof PhysicalProduct
+                && inventoryFeed.currentStock(product.sku()) < config.lowStockThreshold());
 
         WishlistNotifier wishlist = new WishlistNotifier();
         PriceDropAlert dropAlert = new PriceDropAlert(config.alertThresholdPercent());

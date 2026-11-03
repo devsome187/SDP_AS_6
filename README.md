@@ -180,6 +180,10 @@ classDiagram
 on it (Visitor) → publishes a `CategoryReport` event → `ReportArchive`, `MarketAnalytics`
 (Observer). Test: `CategoryInspectionTest`.
 
+The catalog tree is immutable and holds the *opening* stock, so the restock filter's predicate
+reads the live level from `InventoryFeed.currentStock` instead: the report reflects the stock
+changes that happened since start-up, while element classes stay plain data.
+
 ### Concurrency (Clean Code ch. 13)
 
 * `ProducerPool` runs `MarketTrafficGenerator` tasks on an injected `ExecutorService`

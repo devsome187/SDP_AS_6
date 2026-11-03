@@ -17,10 +17,6 @@ public final class EventType<E extends Event> {
         return new EventType<>(name);
     }
 
-    public String name() {
-        return name;
-    }
-
     @Override
     public String toString() {
         return name;
